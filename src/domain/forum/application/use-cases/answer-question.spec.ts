@@ -3,7 +3,7 @@ import { AnswersRepository } from '../repositories/answers-repository'
 
 const mockAnswersRepository: AnswersRepository = {
   create: async () => {
-    console.log('executed')
+    'executed'
   },
 }
 
