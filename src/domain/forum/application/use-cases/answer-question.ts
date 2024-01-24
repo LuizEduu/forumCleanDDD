@@ -1,7 +1,7 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { Answer } from '../entities/answer'
 import { AnswersRepository } from '../repositories/answers-repository'
 import { AnserQuestionUseCaseRequestDTO } from './dto/answer-question-use-case-request'
+import { Answer } from '../../enterprise/entities/answer'
 
 export class AnswerQuestionUseCase {
   constructor(private readonly answersRepository: AnswersRepository) {}
