@@ -1,18 +1,18 @@
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { QuestionsRepository } from '../repositories/questions-repository'
 import { CreateQuestionUseCase } from './create-question'
+import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
 
-const questionsRepository: QuestionsRepository = {
-  create: async () => {
-    'executed'
-  },
-}
+let inMemoryQuestionsRepository: QuestionsRepository
+let sut: CreateQuestionUseCase
 
 describe('Create Question Use Case', () => {
-  it('should be able to a new question', async () => {
-    const createQuestionUseCase = new CreateQuestionUseCase(questionsRepository)
+  beforeEach(() => {
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+    sut = new CreateQuestionUseCase(inMemoryQuestionsRepository)
+  })
 
-    const { question } = await createQuestionUseCase.execute({
+  it('should be able to a question', async () => {
+    const { question } = await sut.execute({
       authorId: '1',
       content: 'nova questão',
       title: 'Nova questão title',

@@ -1,6 +1,9 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { AnswersRepository } from '../repositories/answers-repository'
-import { AnserQuestionUseCaseRequestDTO } from './dto/answer-question-use-case-request'
+import {
+  AnserQuestionUseCaseRequestDTO,
+  AnserQuestionUseCaseResponseDTO,
+} from './dto'
 import { Answer } from '../../enterprise/entities/answer'
 
 export class AnswerQuestionUseCase {
@@ -10,7 +13,7 @@ export class AnswerQuestionUseCase {
     instructorId,
     questionId,
     content,
-  }: AnserQuestionUseCaseRequestDTO) {
+  }: AnserQuestionUseCaseRequestDTO): Promise<AnserQuestionUseCaseResponseDTO> {
     const answer = Answer.create({
       content,
       authorId: new UniqueEntityID(instructorId),
@@ -19,6 +22,6 @@ export class AnswerQuestionUseCase {
 
     await this.answersRepository.create(answer)
 
-    return answer
+    return { answer }
   }
 }

@@ -1,5 +1,5 @@
 import { Question } from '@/domain/forum/enterprise/entities/question'
 
-export interface CreateQuestionUseCaseResponse {
+export interface CreateQuestionUseCaseResponseDTO {
   question: Question
 }
