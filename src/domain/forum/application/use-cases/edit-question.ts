@@ -1,5 +1,8 @@
 import { QuestionsRepository } from '../repositories/questions-repository'
-import { EditQuestionUseCaseRequestDTO } from './dto'
+import {
+  EditQuestionUseCaseRequestDTO,
+  EditQuestionUseCaseResponseDTO,
+} from './dto'
 
 export class EditQuestionUseCase {
   constructor(private readonly questionsRepository: QuestionsRepository) {}
@@ -9,7 +12,7 @@ export class EditQuestionUseCase {
     content,
     title,
     questionId,
-  }: EditQuestionUseCaseRequestDTO): Promise<void> {
+  }: EditQuestionUseCaseRequestDTO): Promise<EditQuestionUseCaseResponseDTO> {
     const question = await this.questionsRepository.findById(questionId)
 
     if (!question) {
@@ -24,5 +27,9 @@ export class EditQuestionUseCase {
     question.content = content
 
     await this.questionsRepository.create(question)
+
+    return {
+      question,
+    }
   }
 }
