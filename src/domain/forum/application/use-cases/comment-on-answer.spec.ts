@@ -1,4 +1,3 @@
-import { makeQuestion } from 'test/factories/make-question'
 import { CommentOnAnswerUseCase } from './comment-on-answer'
 import { AnswersRepository } from '../repositories/answers-repository'
 import { AnswerCommentsRepository } from '../repositories/answer-comments-repository'
