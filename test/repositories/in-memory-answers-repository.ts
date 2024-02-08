@@ -5,7 +5,7 @@ import { Answer } from '@/domain/forum/enterprise/entities/answer'
 export class InMemoryAnswersRepository implements AnswersRepository {
   private answers: Answer[] = []
 
-  async create(answer: Answer): Promise<void> {
+  async create(answer: Answer) {
     this.answers.push(answer)
   }
 
@@ -15,7 +15,7 @@ export class InMemoryAnswersRepository implements AnswersRepository {
     return answer ?? null
   }
 
-  async delete(answer: Answer): Promise<void> {
+  async delete(answer: Answer) {
     const index = this.answers.findIndex(
       (item) => item.id.toString() === answer.id.toString(),
     )
@@ -23,7 +23,7 @@ export class InMemoryAnswersRepository implements AnswersRepository {
     this.answers.splice(index, 1)
   }
 
-  async save(answer: Answer): Promise<void> {
+  async save(answer: Answer) {
     const index = this.answers.findIndex(
       (item) => item.id.toString() === answer.id.toString(),
     )

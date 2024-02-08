@@ -5,7 +5,7 @@ import { Question } from '@/domain/forum/enterprise/entities/question'
 export class InMemoryQuestionsRepository implements QuestionsRepository {
   private questions: Question[] = []
 
-  async create(question: Question): Promise<void> {
+  async create(question: Question) {
     this.questions.push(question)
   }
 
@@ -25,13 +25,13 @@ export class InMemoryQuestionsRepository implements QuestionsRepository {
     return question ?? null
   }
 
-  async delete(question: Question): Promise<void> {
+  async delete(question: Question) {
     const index = this.questions.findIndex((item) => item.id === question.id)
 
     this.questions.splice(index, 1)
   }
 
-  async save(question: Question): Promise<void> {
+  async save(question: Question) {
     const index = this.questions.findIndex(
       (item) => item.id.toString() === question.id.toString(),
     )
