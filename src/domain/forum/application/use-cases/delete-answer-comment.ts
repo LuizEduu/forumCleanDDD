@@ -1,5 +1,11 @@
+import { left, right } from '@/core/either'
 import { AnswerCommentsRepository } from '../repositories/answer-comments-repository'
-import { DeleteAnswerCommentUseCaseRequestDTO } from './dto'
+import {
+  DeleteAnswerCommentUseCaseRequestDTO,
+  DeleteAnswerCommentUseCaseResponseDTO,
+} from './dto'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 export class DeleteAnswerCommentUseCase {
   constructor(
@@ -9,18 +15,20 @@ export class DeleteAnswerCommentUseCase {
   async execute({
     authorId,
     answerCommentId,
-  }: DeleteAnswerCommentUseCaseRequestDTO): Promise<void> {
+  }: DeleteAnswerCommentUseCaseRequestDTO): Promise<DeleteAnswerCommentUseCaseResponseDTO> {
     const answerComment =
       await this.answerCommentsRepository.findById(answerCommentId)
 
     if (!answerComment) {
-      throw new Error('Answer comment not found')
+      return left(new ResourceNotFoundError())
     }
 
     if (answerComment.authorId.toString() !== authorId) {
-      throw new Error('not allowed')
+      return left(new NotAllowedError())
     }
 
     await this.answerCommentsRepository.delete(answerComment)
+
+    return right({})
   }
 }
