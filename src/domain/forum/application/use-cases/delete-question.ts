@@ -1,5 +1,8 @@
 import { DeleteQuestionUseCaseRequestDTO } from './dto'
 import { QuestionsRepository } from '../repositories/questions-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { DeleteQuestionUseCaseResponseDTO } from './dto/delete-question-response'
+import { left, right } from '@/core/either'
 
 export class DeleteQuestionUseCase {
   constructor(private readonly questionsRepository: QuestionsRepository) {}
@@ -7,17 +10,19 @@ export class DeleteQuestionUseCase {
   async execute({
     questionId,
     authorId,
-  }: DeleteQuestionUseCaseRequestDTO): Promise<void> {
+  }: DeleteQuestionUseCaseRequestDTO): Promise<DeleteQuestionUseCaseResponseDTO> {
     const question = await this.questionsRepository.findById(questionId)
 
     if (!question) {
-      throw new Error('Question not found!')
+      return left(new ResourceNotFoundError())
     }
 
     if (question.authorId.toString() !== authorId) {
-      throw new Error('Not allowed.')
+      return left(new ResourceNotFoundError())
     }
 
     await this.questionsRepository.delete(question)
+
+    return right(null)
   }
 }

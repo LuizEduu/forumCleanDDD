@@ -1,6 +1,7 @@
 import { QuestionCommentsRepository } from '@/domain/forum/application/repositories/question-comments-repository'
 import { FetchQuestionCommentsUseCaseRequestDTO } from './dto/fetch-question-comments-request'
 import { FetchQuestionCommentsUseCaseResponseDTO } from './dto/fetch-question-comments-response'
+import { right } from '@/core/either'
 
 export class FetchQuestionCommentsUseCase {
   constructor(private questionCommentsRepository: QuestionCommentsRepository) {}
@@ -14,8 +15,8 @@ export class FetchQuestionCommentsUseCase {
         page,
       })
 
-    return {
+    return right({
       questionComments,
-    }
+    })
   }
 }

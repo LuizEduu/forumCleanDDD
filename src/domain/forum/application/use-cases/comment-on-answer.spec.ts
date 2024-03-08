@@ -25,7 +25,7 @@ describe('CommentOnAnswer Use Case', () => {
 
     await inMemoryAnswersRepository.create(answer)
 
-    const { answerComment } = await sut.execute({
+    const { isLeft, isRight, value } = await sut.execute({
       answerId: answer.id.toString(),
       authorId: answer.authorId.toString(),
       content: 'Comentário teste na resposta',

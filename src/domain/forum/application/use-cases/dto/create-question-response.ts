@@ -1,5 +1,9 @@
+import { Either } from '@/core/either'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 
-export interface CreateQuestionUseCaseResponseDTO {
-  question: Question
-}
+export type CreateQuestionUseCaseResponseDTO = Either<
+  null,
+  {
+    question: Question
+  }
+>

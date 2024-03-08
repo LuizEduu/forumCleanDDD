@@ -1,3 +1,4 @@
+import { right } from '@/core/either'
 import { AnswersRepository } from '../repositories/answers-repository'
 import {
   FetchQuestionAnswersRequestDTO,
@@ -18,8 +19,8 @@ export class FetchQuestionAnswersUseCase {
       },
     )
 
-    return {
+    return right({
       answers,
-    }
+    })
   }
 }

@@ -5,6 +5,7 @@ import {
 } from './dto'
 import { QuestionsRepository } from '../repositories/questions-repository'
 import { Question } from '../../enterprise/entities/question'
+import { right } from '@/core/either'
 
 export class CreateQuestionUseCase {
   constructor(private readonly questionsRepository: QuestionsRepository) {}
@@ -22,6 +23,8 @@ export class CreateQuestionUseCase {
 
     await this.questionsRepository.create(question)
 
-    return { question }
+    return right({
+      question,
+    })
   }
 }

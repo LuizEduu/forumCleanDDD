@@ -1,5 +1,9 @@
+import { Either } from '@/core/either'
 import { AnswerComment } from '@/domain/forum/enterprise/entities/answer-comments'
 
-export interface FetchAnswerCommentsUseCaseResponseDTO {
-  answerComments: AnswerComment[]
-}
+export type FetchAnswerCommentsUseCaseResponseDTO = Either<
+  null,
+  {
+    answerComments: AnswerComment[]
+  }
+>

@@ -3,6 +3,7 @@ import {
   FetchAnswerCommentsUseCaseRequestDTO,
   FetchAnswerCommentsUseCaseResponseDTO,
 } from './dto'
+import { right } from '@/core/either'
 
 export class FetchAnswerCommentsUseCase {
   constructor(private answerCommentsRepository: AnswerCommentsRepository) {}
@@ -16,8 +17,8 @@ export class FetchAnswerCommentsUseCase {
         page,
       })
 
-    return {
+    return right({
       answerComments,
-    }
+    })
   }
 }

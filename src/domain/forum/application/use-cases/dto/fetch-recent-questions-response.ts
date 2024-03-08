@@ -1,5 +1,9 @@
+import { Either } from '@/core/either'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 
-export interface FetchRecentQuestionsUseCaseResponseDTO {
-  questions: Question[]
-}
+export type FetchRecentQuestionsUseCaseResponseDTO = Either<
+  null,
+  {
+    questions: Question[]
+  }
+>

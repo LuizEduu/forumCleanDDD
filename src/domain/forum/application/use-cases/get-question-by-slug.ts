@@ -1,3 +1,4 @@
+import { right } from '@/core/either'
 import { QuestionsRepository } from '../repositories/questions-repository'
 import {
   GetQuestionBySlugUseCaseRequestDTO,
@@ -16,8 +17,8 @@ export class GetQuestionBySlugUseCase {
       throw new Error('Question not found.')
     }
 
-    return {
+    return right({
       question,
-    }
+    })
   }
 }

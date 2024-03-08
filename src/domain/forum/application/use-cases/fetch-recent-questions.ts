@@ -1,3 +1,4 @@
+import { right } from '@/core/either'
 import { QuestionsRepository } from '../repositories/questions-repository'
 import { FetchRecentQuestionsUseCaseResponseDTO } from './dto'
 import { FetchRecentQuetionsUseCaseRequestDTO } from './dto/fetch-recent-questions-request'
@@ -12,8 +13,8 @@ export class FetchRecentQuestionsUseCase {
       page,
     })
 
-    return {
+    return right({
       questions,
-    }
+    })
   }
 }

@@ -1,5 +1,9 @@
+import { Either } from '@/core/either'
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
 
-export interface AnserQuestionUseCaseResponseDTO {
-  answer: Answer
-}
+export type AnserQuestionUseCaseResponseDTO = Either<
+  null,
+  {
+    answer: Answer
+  }
+>

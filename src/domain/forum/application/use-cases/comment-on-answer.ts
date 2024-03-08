@@ -6,6 +6,8 @@ import {
 import { AnswersRepository } from '../repositories/answers-repository'
 import { AnswerCommentsRepository } from '../repositories/answer-comments-repository'
 import { AnswerComment } from '../../enterprise/entities/answer-comments'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { left, right } from '@/core/either'
 
 export class CommentOnAnswerUseCase {
   constructor(
@@ -21,7 +23,7 @@ export class CommentOnAnswerUseCase {
     const answer = await this.answersRepository.findById(answerId)
 
     if (!answer) {
-      throw new Error('Answer not found')
+      return left(new ResourceNotFoundError())
     }
 
     const answerComment = AnswerComment.create({
@@ -32,8 +34,8 @@ export class CommentOnAnswerUseCase {
 
     await this.answersCommentsRepository.create(answerComment)
 
-    return {
+    return right({
       answerComment,
-    }
+    })
   }
 }

@@ -5,6 +5,7 @@ import {
   AnserQuestionUseCaseResponseDTO,
 } from './dto'
 import { Answer } from '../../enterprise/entities/answer'
+import { right } from '@/core/either'
 
 export class AnswerQuestionUseCase {
   constructor(private readonly answersRepository: AnswersRepository) {}
@@ -22,6 +23,8 @@ export class AnswerQuestionUseCase {
 
     await this.answersRepository.create(answer)
 
-    return { answer }
+    return right({
+      answer,
+    })
   }
 }
