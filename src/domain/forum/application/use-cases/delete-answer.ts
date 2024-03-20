@@ -3,6 +3,7 @@ import { AnswersRepository } from '../repositories/answers-repository'
 import { DeleteAnswerUseCaseRequestDTO } from './dto/delete-answer-request'
 import { DeleteAnswerUseCaseResponseDTO } from './dto/delete-answer-response'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 export class DeleteAnswerUseCase {
   constructor(private readonly answersRepository: AnswersRepository) {}
@@ -18,7 +19,7 @@ export class DeleteAnswerUseCase {
     }
 
     if (answer.authorId.toString() !== authorId) {
-      return left(new ResourceNotFoundError())
+      return left(new NotAllowedError())
     }
 
     await this.answersRepository.delete(answer)

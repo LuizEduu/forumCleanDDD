@@ -2,6 +2,8 @@ import { EditQuestionUseCase } from './edit-question'
 import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
 import { makeQuestion } from 'test/factories/make-question'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { NotAllowedError } from './errors/not-allowed-error'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let sut: EditQuestionUseCase
@@ -22,21 +24,20 @@ describe('Edit Question Use Case', () => {
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
-    await sut.execute({
+    const result = await sut.execute({
       questionId: newQuestion.id.toValue(),
       authorId: 'author-1',
       title: 'Pergunta teste',
       content: 'Conteúdo teste',
     })
 
-    const findQuestion = await inMemoryQuestionsRepository.findById(
-      newQuestion.id.toValue(),
-    )
-
-    expect(findQuestion).toMatchObject({
-      title: 'Pergunta teste',
-      content: 'Conteúdo teste',
-    })
+    expect(result.isLeft()).toBe(false)
+    expect(result.isRight()).toBe(true)
+    result.isRight() &&
+      expect(result.value.question).toMatchObject({
+        title: 'Pergunta teste',
+        content: 'Conteúdo teste',
+      })
   })
 
   it('should not be able to edit a question from another user', async () => {
@@ -49,13 +50,26 @@ describe('Edit Question Use Case', () => {
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
-    expect(() => {
-      return sut.execute({
-        questionId: newQuestion.id.toValue(),
-        authorId: 'author-2',
-        title: 'Pergunta teste',
-        content: 'Conteúdo teste',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionId: newQuestion.id.toValue(),
+      authorId: 'author-2',
+      title: 'Pergunta teste',
+      content: 'Conteúdo teste',
+    })
+    expect(result.isLeft()).toBe(true)
+    expect(result.isRight()).toBe(false)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+  })
+
+  it('should not be able to edit a question not found', async () => {
+    const result = await sut.execute({
+      questionId: 'not-found-id',
+      authorId: 'author-2',
+      title: 'Pergunta teste',
+      content: 'Conteúdo teste',
+    })
+    expect(result.isLeft()).toBe(true)
+    expect(result.isRight()).toBe(false)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

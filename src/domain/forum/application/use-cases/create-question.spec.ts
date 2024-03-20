@@ -12,15 +12,20 @@ describe('Create Question Use Case', () => {
   })
 
   it('should be able to a question', async () => {
-    const { question } = await sut.execute({
+    const result = await sut.execute({
       authorId: '1',
       content: 'nova questão',
       title: 'Nova questão title',
     })
 
-    expect(question.authorId.toString()).toEqual('1')
-    expect(question.id).toBeTruthy()
-    expect(question.content).toEqual('nova questão')
-    expect(question.title).toEqual('Nova questão title')
+    expect(result.isLeft()).toBe(false)
+    expect(result.isRight()).toBe(true)
+    result.isRight() &&
+      expect(result.value.question.authorId.toString()).toEqual('1')
+    result.isRight() && expect(result.value.question.id).toBeTruthy()
+    result.isRight() &&
+      expect(result.value.question.content).toEqual('nova questão')
+    result.isRight() &&
+      expect(result.value.question.title).toEqual('Nova questão title')
   })
 })

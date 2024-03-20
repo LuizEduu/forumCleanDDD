@@ -3,6 +3,8 @@ import { DeleteQuestionCommentUseCase } from '@/domain/forum/application/use-cas
 import { makeQuestionComment } from 'test/factories/make-question-comment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { QuestionCommentsRepository } from '../repositories/question-comments-repository'
+import { NotAllowedError } from './errors/not-allowed-error'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemoryQuestionCommentsRepository: QuestionCommentsRepository
 let sut: DeleteQuestionCommentUseCase
@@ -20,7 +22,7 @@ describe('Delete Question Comment', () => {
 
     await inMemoryQuestionCommentsRepository.create(questionComment)
 
-    await sut.execute({
+    const result = await sut.execute({
       questionCommentId: questionComment.id.toString(),
       authorId: questionComment.authorId.toString(),
     })
@@ -30,6 +32,8 @@ describe('Delete Question Comment', () => {
         questionComment.id.toString(),
       )
 
+    expect(result.isLeft()).toBe(false)
+    expect(result.isRight()).toBe(true)
     expect(deletedQuestionComment).toBeNull()
   })
 
@@ -40,20 +44,24 @@ describe('Delete Question Comment', () => {
 
     await inMemoryQuestionCommentsRepository.create(questionComment)
 
-    expect(() => {
-      return sut.execute({
-        questionCommentId: questionComment.id.toString(),
-        authorId: 'author-2',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionCommentId: questionComment.id.toString(),
+      authorId: 'author-2',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.isRight()).toBe(false)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 
   it('shoud not be able to delete a question comment with his not found', async () => {
-    expect(() => {
-      return sut.execute({
-        questionCommentId: 'not-found-question-comment-id',
-        authorId: 'author-2',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionCommentId: 'not-found-question-comment-id',
+      authorId: 'author-2',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.isRight()).toBe(false)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

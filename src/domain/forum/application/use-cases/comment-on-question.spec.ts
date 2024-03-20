@@ -4,6 +4,7 @@ import { QuestionsRepository } from '../repositories/questions-repository'
 import { QuestionCommentsRepository } from '../repositories/question-comments-repository'
 import { CommentOnQuestionUseCase } from './comment-on-question'
 import { makeQuestion } from 'test/factories/make-question'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemoryQuestionsRepository: QuestionsRepository
 let inMemoryQuestionCommentsRepository: QuestionCommentsRepository
@@ -26,25 +27,29 @@ describe('CommentOnQuestion Use Case', () => {
 
     await inMemoryQuestionsRepository.create(question)
 
-    const { questionComment } = await sut.execute({
+    const result = await sut.execute({
       questionId: question.id.toString(),
       authorId: question.authorId.toString(),
       content: 'Comentário teste',
     })
 
-    expect(questionComment.content).toEqual('Comentário teste')
-    expect(questionComment.authorId.toString()).toEqual(
-      question.authorId.toString(),
-    )
+    expect(result.isLeft()).toBe(false)
+    expect(result.isRight()).toBe(true)
+    result.isRight() &&
+      expect(result.value.questionComment.authorId.toString()).toEqual(
+        question.authorId.toString(),
+      )
   })
 
   it('shoud not be able to comment on question when question not found', async () => {
-    expect(async () => {
-      await sut.execute({
-        questionId: 'question_not_found_id',
-        authorId: 'any_author_id',
-        content: 'Comentário teste',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionId: 'question_not_found_id',
+      authorId: 'any_author_id',
+      content: 'Comentário teste',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.isRight()).toBe(false)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

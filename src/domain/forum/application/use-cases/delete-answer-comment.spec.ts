@@ -21,7 +21,7 @@ describe('Delete Answer Comment', () => {
 
     await inMemoryAnswerCommentsRepository.create(answerComment)
 
-    await sut.execute({
+    const result = await sut.execute({
       answerCommentId: answerComment.id.toString(),
       authorId: answerComment.authorId.toString(),
     })
@@ -31,6 +31,8 @@ describe('Delete Answer Comment', () => {
         answerComment.id.toString(),
       )
 
+    expect(result.isLeft()).toBe(false)
+    expect(result.isRight()).toBe(true)
     expect(deletedAnswerComment).toBeNull()
   })
 
@@ -47,6 +49,7 @@ describe('Delete Answer Comment', () => {
     })
 
     expect(result.isLeft()).toBe(true)
+    expect(result.isRight()).toBe(false)
     expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 
@@ -57,6 +60,7 @@ describe('Delete Answer Comment', () => {
     })
 
     expect(result.isLeft()).toBe(true)
+    expect(result.isRight()).toBe(false)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

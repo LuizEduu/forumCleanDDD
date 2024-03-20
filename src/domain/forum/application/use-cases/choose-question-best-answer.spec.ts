@@ -31,14 +31,17 @@ describe('Choose Question Best Answer', () => {
     await inMemoryQuestionsRepository.create(newQuestion)
     await inMemoryAnswersRepository.create(answer)
 
-    const { isLeft, isRight, value } = await sut.execute({
+    const result = await sut.execute({
       answerId: answer.id.toString(),
       authorId: newQuestion.authorId.toString(),
     })
 
-    expect(isRight()).toBe(true)
-    expect(isLeft()).toBe(false)
-    expect(value).toEqual(answer.id)
+    expect(result.isLeft()).toBe(false)
+    expect(result.isRight()).toBe(true)
+    result.isRight() &&
+      expect(result.value.question?.bestAnswerId?.toString()).toEqual(
+        answer.id.toString(),
+      )
   })
 
   it('should not be able to to choose another user question best answer', async () => {

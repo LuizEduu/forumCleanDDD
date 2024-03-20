@@ -2,6 +2,7 @@ import { QuestionsRepository } from '../repositories/questions-repository'
 import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
 import { DeleteQuestionUseCase } from './delete-question'
 import { makeQuestion } from 'test/factories/make-question'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemoryQuestionsRepository: QuestionsRepository
 let sut: DeleteQuestionUseCase
@@ -17,7 +18,7 @@ describe('Delete Question Use Case', () => {
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
-    await sut.execute({
+    const result = await sut.execute({
       questionId: newQuestion.id.toString(),
       authorId: newQuestion.authorId.toString(),
     })
@@ -26,16 +27,20 @@ describe('Delete Question Use Case', () => {
       newQuestion.id.toString(),
     )
 
+    expect(result.isLeft()).toBe(false)
+    expect(result.isRight()).toBe(true)
     expect(findQuestion).toEqual(null)
   })
 
   it('should not be able to delete a question with question not found', async () => {
-    expect(async () => {
-      await sut.execute({
-        questionId: 'question-not-found-id',
-        authorId: 'question-not-found-author',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionId: 'question-not-found-id',
+      authorId: 'question-not-found-author',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.isRight()).toBe(false)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to delete a question the another author', async () => {
@@ -43,11 +48,13 @@ describe('Delete Question Use Case', () => {
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
-    expect(async () => {
-      await sut.execute({
-        questionId: newQuestion.id.toString(),
-        authorId: 'question-not-found-author',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionId: 'question-not-found-id',
+      authorId: 'question-not-found-author',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.isRight()).toBe(false)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })
