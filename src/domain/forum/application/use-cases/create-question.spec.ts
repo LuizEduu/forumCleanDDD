@@ -28,8 +28,8 @@ describe('Create Question Use Case', () => {
       expect(result.value.question.id).toBeTruthy()
       expect(result.value.question.content).toEqual('nova questão')
       expect(result.value.question.title).toEqual('Nova questão title')
-      expect(result.value.question.attachments).toHaveLength(2)
-      expect(result.value.question.attachments).toEqual([
+      expect(result.value.question.attachments.currentItems).toHaveLength(2)
+      expect(result.value.question.attachments.currentItems).toEqual([
         expect.objectContaining({
           attachmentId: new UniqueEntityID('1'),
         }),

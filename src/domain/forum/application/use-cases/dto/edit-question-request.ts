@@ -3,4 +3,5 @@ export interface EditQuestionUseCaseRequestDTO {
   title: string
   content: string
   questionId: string
+  attachmentsIds: string[]
 }
