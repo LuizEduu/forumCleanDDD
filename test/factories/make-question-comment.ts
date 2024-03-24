@@ -6,7 +6,6 @@ import {
 } from '@/domain/forum/enterprise/entities/question-comments'
 
 /**
- * @type {object}
  * @property {UniqueEntityID} authorId - id do autor da pergunta.
  * @property {string} content - comentário na resposta.
  * @property {UniqueEntityID} questionId - id da pergunta.
