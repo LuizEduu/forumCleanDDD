@@ -3,13 +3,23 @@ import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questio
 import { DeleteQuestionUseCase } from './delete-question'
 import { makeQuestion } from 'test/factories/make-question'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { QuestionAttachmentsRepository } from '../repositories/question-attachments-repository'
+import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
+import { makeQuestionAttachment } from 'test/factories/make-question-attachment'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { QuestionAttachmentList } from '../../enterprise/entities/question-attachment-list'
 
 let inMemoryQuestionsRepository: QuestionsRepository
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let sut: DeleteQuestionUseCase
 
 describe('Delete Question Use Case', () => {
   beforeEach(() => {
-    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
+      inMemoryQuestionAttachmentsRepository,
+    )
     sut = new DeleteQuestionUseCase(inMemoryQuestionsRepository)
   })
 
@@ -17,6 +27,23 @@ describe('Delete Question Use Case', () => {
     const newQuestion = makeQuestion()
 
     await inMemoryQuestionsRepository.create(newQuestion)
+
+    const attachmentOne = makeQuestionAttachment({
+      questionId: newQuestion.id,
+      attachmentId: new UniqueEntityID('1'),
+    })
+
+    const attachmentTwo = makeQuestionAttachment({
+      questionId: newQuestion.id,
+      attachmentId: new UniqueEntityID('2'),
+    })
+
+    const attachmentsList = new QuestionAttachmentList([
+      attachmentOne,
+      attachmentTwo,
+    ])
+
+    newQuestion.attachments = attachmentsList
 
     const result = await sut.execute({
       questionId: newQuestion.id.toString(),
@@ -30,6 +57,12 @@ describe('Delete Question Use Case', () => {
     expect(result.isLeft()).toBe(false)
     expect(result.isRight()).toBe(true)
     expect(findQuestion).toEqual(null)
+    expect(
+      inMemoryQuestionAttachmentsRepository.questionAttachments,
+    ).toHaveLength(0)
+    expect(inMemoryQuestionAttachmentsRepository.questionAttachments).toEqual(
+      [],
+    )
   })
 
   it('should not be able to delete a question with question not found', async () => {

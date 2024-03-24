@@ -4,7 +4,7 @@ import { QuestionAttachment } from '@/domain/forum/enterprise/entities/question-
 export class InMemoryQuestionAttachmentsRepository
   implements QuestionAttachmentsRepository
 {
-  public readonly questionAttachments: QuestionAttachment[] = []
+  public questionAttachments: QuestionAttachment[] = []
 
   async findManyByQuestionId(
     questionId: string,
@@ -12,5 +12,13 @@ export class InMemoryQuestionAttachmentsRepository
     return this.questionAttachments.filter(
       (qa) => qa.questionId.toString() === questionId,
     )
+  }
+
+  async deleteManyByQuestionId(questionId: string): Promise<void> {
+    const attachments = this.questionAttachments.filter(
+      (qa) => qa.questionId.toString() !== questionId,
+    )
+
+    this.questionAttachments = attachments
   }
 }
