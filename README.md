@@ -20,3 +20,4 @@ A API tem como objetivo fornecer funcionalidades para um fórum web, incluindo:
 
 - **Domain Driven Design (DDD):** Explore e aplique conceitos de DDD para modelagem de domínio na arquitetura da aplicação.
 - **Design Patterns:** Analise e implemente padrões de design como WatchedList para resolver problemas específicos de desenvolvimento.
+- **Domain events:** Comunicação entre os dominios e sub dominios da aplicação utilizando o pattern de domain events.
