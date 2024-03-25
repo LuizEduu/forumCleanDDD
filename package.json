@@ -1,7 +1,7 @@
 {
   "name": "forumcleanddd",
   "version": "1.0.0",
-  "description": "",
+  "description": "backend to web forum",
   "main": "index.js",
   "scripts": {
     "test": "vitest run",
