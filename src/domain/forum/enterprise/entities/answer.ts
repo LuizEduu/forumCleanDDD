@@ -34,7 +34,8 @@ export class Answer extends Entity<AnswerProps> {
   }
 
   set attachments(attachments: AnswerAttachmentList) {
-    this.attachments = attachments
+    this.props.attachments = attachments
+    this.touch()
   }
 
   get content() {

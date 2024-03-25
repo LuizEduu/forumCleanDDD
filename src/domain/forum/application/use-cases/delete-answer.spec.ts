@@ -4,13 +4,21 @@ import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-r
 import { makeAnswer } from 'test/factories/make-answer'
 import { NotAllowedError } from './errors/not-allowed-error'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments-repository'
+import { makeAnswerAttachment } from 'test/factories/make-answer-attachment'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
+let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 let inMemoryAnswersRepository: AnswersRepository
 let sut: DeleteAnswerUseCase
 
 describe('Delete Answer Use Case', () => {
   beforeEach(() => {
-    inMemoryAnswersRepository = new InMemoryAnswersRepository()
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository()
+    inMemoryAnswersRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository,
+    )
     sut = new DeleteAnswerUseCase(inMemoryAnswersRepository)
   })
 
@@ -18,6 +26,17 @@ describe('Delete Answer Use Case', () => {
     const answer = makeAnswer()
 
     await inMemoryAnswersRepository.create(answer)
+
+    inMemoryAnswerAttachmentsRepository.answerAttachments.push(
+      makeAnswerAttachment({
+        answerId: answer.id,
+        attachmentId: new UniqueEntityID('1'),
+      }),
+      makeAnswerAttachment({
+        answerId: answer.id,
+        attachmentId: new UniqueEntityID('2'),
+      }),
+    )
 
     const result = await sut.execute({
       answerId: answer.id.toString(),
@@ -31,6 +50,10 @@ describe('Delete Answer Use Case', () => {
     expect(result.isLeft()).toBe(false)
     expect(result.isRight()).toBe(true)
     expect(findAnswer).toEqual(null)
+    expect(inMemoryAnswerAttachmentsRepository.answerAttachments).toHaveLength(
+      0,
+    )
+    expect(inMemoryAnswerAttachmentsRepository.answerAttachments).toEqual([])
   })
 
   it('should not be able to delete a answer with answer not found', async () => {
