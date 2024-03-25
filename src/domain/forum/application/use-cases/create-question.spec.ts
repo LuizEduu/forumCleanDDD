@@ -5,8 +5,8 @@ import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questio
 import { QuestionAttachmentsRepository } from '../repositories/question-attachments-repository'
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 
-let inMemoryQuestionsRepository: QuestionsRepository
 let inMemoryQuestionAttachmentsRepository: QuestionAttachmentsRepository
+let inMemoryQuestionsRepository: QuestionsRepository
 let sut: CreateQuestionUseCase
 
 describe('Create Question Use Case', () => {

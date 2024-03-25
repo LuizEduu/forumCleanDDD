@@ -5,14 +5,21 @@ import { QuestionCommentsRepository } from '../repositories/question-comments-re
 import { CommentOnQuestionUseCase } from './comment-on-question'
 import { makeQuestion } from 'test/factories/make-question'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { QuestionAttachmentsRepository } from '../repositories/question-attachments-repository'
+import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 
+let inMemoryQuestionAttachmentsRepository: QuestionAttachmentsRepository
 let inMemoryQuestionsRepository: QuestionsRepository
 let inMemoryQuestionCommentsRepository: QuestionCommentsRepository
 let sut: CommentOnQuestionUseCase
 
 describe('CommentOnQuestion Use Case', () => {
   beforeEach(() => {
-    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
+      inMemoryQuestionAttachmentsRepository,
+    )
     inMemoryQuestionCommentsRepository =
       new InMemoryQuestionCommentsRepository()
 
