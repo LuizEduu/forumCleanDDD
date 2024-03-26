@@ -7,7 +7,7 @@ import {
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 
-export class ReadNotification {
+export class ReadNotificationUseCase {
   constructor(
     private readonly notificationsRepository: NotificationsRepository,
   ) {}
