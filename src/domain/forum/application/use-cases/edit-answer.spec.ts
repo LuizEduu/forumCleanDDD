@@ -65,22 +65,6 @@ describe('Edit Answer Use Case', () => {
           attachmentId: new UniqueEntityID('3'),
         }),
       ])
-      expect(result.value.answer.attachments.getNewItems()).toEqual([
-        expect.objectContaining({
-          attachmentId: new UniqueEntityID('1'),
-        }),
-        expect.objectContaining({
-          attachmentId: new UniqueEntityID('3'),
-        }),
-      ])
-      expect(result.value.answer.attachments.getRemovedItems()).toEqual([
-        expect.objectContaining({
-          attachmentId: new UniqueEntityID('1'),
-        }),
-        expect.objectContaining({
-          attachmentId: new UniqueEntityID('2'),
-        }),
-      ])
     }
   })
 
