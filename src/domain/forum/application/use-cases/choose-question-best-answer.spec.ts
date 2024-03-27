@@ -9,6 +9,7 @@ import { QuestionAttachmentsRepository } from '../repositories/question-attachme
 import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments-repository'
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 import { AnswerAttachmentsRepository } from '../repositories/answer-attachments-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemoryQuestionAttachmentsRepository: QuestionAttachmentsRepository
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
@@ -80,5 +81,37 @@ describe('Choose Question Best Answer', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(NotAllowedError)
+  })
+
+  it('should not be able to to choose best answer with answer not found', async () => {
+    const question = makeQuestion({
+      authorId: new UniqueEntityID('author-1'),
+    })
+
+    await inMemoryQuestionsRepository.create(question)
+
+    const result = await sut.execute({
+      answerId: 'not-found-id',
+      authorId: 'author-2',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should not be able to to choose best answer with question not found', async () => {
+    const answer = makeAnswer({
+      questionId: new UniqueEntityID('not-found-question-id'),
+    })
+
+    await inMemoryAnswersRepository.create(answer)
+
+    const result = await sut.execute({
+      answerId: answer.id.toString(),
+      authorId: 'author-2',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

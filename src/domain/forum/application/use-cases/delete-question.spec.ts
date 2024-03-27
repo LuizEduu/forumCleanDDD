@@ -3,11 +3,11 @@ import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questio
 import { DeleteQuestionUseCase } from './delete-question'
 import { makeQuestion } from 'test/factories/make-question'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
-import { QuestionAttachmentsRepository } from '../repositories/question-attachments-repository'
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 import { makeQuestionAttachment } from 'test/factories/make-question-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { QuestionAttachmentList } from '../../enterprise/entities/question-attachment-list'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 let inMemoryQuestionsRepository: QuestionsRepository
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
@@ -82,12 +82,12 @@ describe('Delete Question Use Case', () => {
     await inMemoryQuestionsRepository.create(newQuestion)
 
     const result = await sut.execute({
-      questionId: 'question-not-found-id',
+      questionId: newQuestion.id.toString(),
       authorId: 'question-not-found-author',
     })
 
     expect(result.isLeft()).toBe(true)
     expect(result.isRight()).toBe(false)
-    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

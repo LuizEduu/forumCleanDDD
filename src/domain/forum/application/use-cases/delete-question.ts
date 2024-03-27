@@ -3,6 +3,7 @@ import { QuestionsRepository } from '../repositories/questions-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { DeleteQuestionUseCaseResponseDTO } from './dto/delete-question-response'
 import { left, right } from '@/core/either'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 export class DeleteQuestionUseCase {
   constructor(private readonly questionsRepository: QuestionsRepository) {}
@@ -18,7 +19,7 @@ export class DeleteQuestionUseCase {
     }
 
     if (question.authorId.toString() !== authorId) {
-      return left(new ResourceNotFoundError())
+      return left(new NotAllowedError())
     }
 
     await this.questionsRepository.delete(question)
