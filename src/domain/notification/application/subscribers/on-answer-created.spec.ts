@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { makeAnswer } from 'test/factories/make-answer'
 import { OnAnswerCreated } from './on-answer-created'
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository'
@@ -11,14 +12,26 @@ import { QuestionAttachmentsRepository } from '@/domain/forum/application/reposi
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 import { NotificationsRepository } from '../repositories/notifications-repository'
 import { InMemoryNotificationsRepository } from 'test/repositories/in-memory-notifications-repository'
+import { makeQuestion } from 'test/factories/make-question'
+import { MockInstance } from 'vitest'
+import {
+  SendNotificationUseCaseRequestDTO,
+  SendNotificationUseCaseResponseDTO,
+} from '../use-cases/dto'
+import { waitFor } from 'test/utils/wait-for'
 
 let inMemoryAnswerAttachmentsRepository: AnswerAttachmentsRepository
 let inMemoryAnswersRepository: AnswersRepository
 let inMemoryQuestionAttachmentsRepository: QuestionAttachmentsRepository
-let questionsRepository: QuestionsRepository
-let notificationsRepository: NotificationsRepository
-let sendNotification: SendNotificationUseCase
-let sut: OnAnswerCreated
+let inMemoryQuestionsRepository: QuestionsRepository
+let inMemoryNotificationsRepository: NotificationsRepository
+let sendNotificationUseCase: SendNotificationUseCase
+let onAnswerCreated: OnAnswerCreated
+
+let sendNotificationUseCaseExecuteSpy: MockInstance<
+  [SendNotificationUseCaseRequestDTO],
+  Promise<SendNotificationUseCaseResponseDTO>
+>
 
 describe('on answer created', () => {
   beforeEach(() => {
@@ -32,19 +45,35 @@ describe('on answer created', () => {
     inMemoryQuestionAttachmentsRepository =
       new InMemoryQuestionAttachmentsRepository()
 
-    questionsRepository = new InMemoryQuestionsRepository(
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
       inMemoryQuestionAttachmentsRepository,
     )
 
-    notificationsRepository = new InMemoryNotificationsRepository()
+    inMemoryNotificationsRepository = new InMemoryNotificationsRepository()
 
-    sendNotification = new SendNotificationUseCase(notificationsRepository)
+    sendNotificationUseCase = new SendNotificationUseCase(
+      inMemoryNotificationsRepository,
+    )
 
-    sut = new OnAnswerCreated(questionsRepository, sendNotification)
+    sendNotificationUseCaseExecuteSpy = vi.spyOn(
+      sendNotificationUseCase,
+      'execute',
+    )
+
+    onAnswerCreated = new OnAnswerCreated(
+      inMemoryQuestionsRepository,
+      sendNotificationUseCase,
+    )
   })
   it('shoud send a notification when an answer is created', async () => {
-    const answer = makeAnswer()
+    const question = makeQuestion()
+    const answer = makeAnswer({ questionId: question.id })
 
+    await inMemoryQuestionsRepository.create(question)
     await inMemoryAnswersRepository.create(answer)
+
+    await waitFor(() => {
+      expect(sendNotificationUseCaseExecuteSpy).toHaveBeenCalled()
+    })
   })
 })
